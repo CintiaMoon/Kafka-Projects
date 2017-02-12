@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+## Author: Cintia 
+## filename: Ubuntu-Kafka-ZK
+## Description: It creates a box with Ubuntu 16.04, Java 8, Zookeeper and Kafka
+Vagrant.configure("2") do |config|
+
+	config.vm.box = "bento/ubuntu-16.04"
+	#config.ssh.forward_agent = true # So that boxes don't have to setup key-less ssh
+	#config.ssh.insert_key = false # To generate a new ssh key and don't use the default Vagrant one
+
+	# Create a private network, which allows host-only access to the machine
+	# using a specific IP.
+	config.vm.network "private_network", ip: "192.168.33.10"
+  
+	config.vm.provider "virtualbox" do |vb|
+		# vb.gui = true
+		vb.memory = "2048"
+		# vb.cpus = "4"
+	end
+	
+	# Script provisioning  	
+	config.vm.provision :shell, path: "scripts/bootstrap.sh"
+	config.vm.provision :shell, path: "scripts/startup.sh", run: "always"
+
+	config.vm.provider "virtualbox" do |v|
+		#  This setting controls how much cpu time a virtual CPU can use. A value of 50 implies a single virtual CPU can use up to 50% of a single host CPU.
+		v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+	end
+end
